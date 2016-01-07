@@ -698,7 +698,7 @@ func (L *State) NewError(msg string) *LuaError {
 	return &LuaError{0, msg, L.StackTrace()}
 }
 
-func Main(args []string) {
+func MainGo(L *State, args []string) {
 	l := len(args)
 	arg := make([](*_Ctype_char), 0)
 	for i, _ := range args {
@@ -708,5 +708,5 @@ func Main(args []string) {
 		arg = append(arg, strptr)
 	}
 
-	C.main_go(C.int(l), (**_Ctype_char)(unsafe.Pointer(&arg[0])))
+	C.main_lua(L.s, C.int(l), (**_Ctype_char)(unsafe.Pointer(&arg[0])))
 }

@@ -139,7 +139,7 @@ typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize);
 extern const char lua_ident[];
 
 
-LUA_API int main_go (int argc, char **argv);
+LUA_API int main_lua (lua_State *L, int argc, char **argv);
 
 /*
 ** state manipulation
