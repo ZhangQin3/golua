@@ -461,15 +461,18 @@ func (L *State) Register(name string, f LuaGoFunction) {
 type GoFuncs map[string]LuaGoFunction
 
 // Registers Go function(s) as to a module
-func (L *State) RegisterFuncs(mod string, funcs GoFuncs) {
+func (L *State) NewLib(mod string, funcs GoFuncs) {
 	L.NewTable()
+	L.SetFuncs(funcs)
+	L.SetGlobal(mod)
+}
 
+// Registers all functions in funcs into the table on the top of the stack
+func (L *State) SetFuncs(funcs GoFuncs) {
 	for n, f := range funcs {
 		L.PushGoFunction(f)
 		L.SetField(-2, n)
 	}
-
-	L.SetGlobal(mod)
 }
 
 // lua_remove
@@ -485,6 +488,11 @@ func (L *State) Replace(index int) {
 	C.lua_copy(L.s, -1, C.int(index))
 	// C.pop(L.s, 1)
 	L.Pop(1)
+}
+
+// lua_copy
+func (L *State) Copy(from, to int) {
+	C.lua_copy(L.s, C.int(from), C.int(to))
 }
 
 // lua_resume
