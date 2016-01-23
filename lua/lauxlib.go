@@ -128,6 +128,13 @@ func (L *State) LGetMetaTable(tname string) {
 	C.lua_getfield(L.s, LUA_REGISTRYINDEX, Ctname)
 }
 
+// luaL_setmetatable
+func (L *State) LSetMetaTable(tname string) {
+	Ctname := C.CString(tname)
+	defer C.free(unsafe.Pointer(Ctname))
+	C.luaL_setmetatable(L.s, Ctname)
+}
+
 // luaL_gsub
 func (L *State) GSub(s string, p string, r string) string {
 	Cs := C.CString(s)
