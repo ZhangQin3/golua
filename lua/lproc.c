@@ -2,9 +2,6 @@
 
 #include <lua.h>
 #include <lauxlib.h>
-#include <lualib.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <string.h>
 #include "_cgo_export.h"
 
