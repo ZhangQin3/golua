@@ -11,27 +11,27 @@
 typedef struct {
 	char *data;
 	size_t cap;
-    size_t len;
+	size_t len;
 } dump_func;
 
 int ll_lua_Writer(lua_State* ls, const void* p, size_t sz, void* ud) {
-    dump_func* bd = (dump_func*)ud;
+	dump_func* bd = (dump_func*)ud;
 
-    char* newData;
-    if (bd->len + sz > bd->cap) {
-	    newData = (char*)realloc(bd->data, bd->cap + 512);
+	char* newData;
+	if (bd->len + sz > bd->cap) {
+		newData = (char*)realloc(bd->data, bd->cap + 512);
 	}
 
-    if (newData) {
-        memcpy(newData + bd->len, p, sz);
-        bd->data = newData;
-        bd->len += sz;
-    } else {
-        free(newData);
-        return 1;
-    }
+	if (newData) {
+		memcpy(newData + bd->len, p, sz);
+		bd->data = newData;
+		bd->len += sz;
+	} else {
+		free(newData);
+		return 1;
+	}
 
-    return 0;
+	return 0;
 }
 
 lua_State * ll_newstate(lua_State *L) {
