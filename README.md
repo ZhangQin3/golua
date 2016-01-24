@@ -5,7 +5,8 @@ Go Bindings for the lua C API
 This is a fork from https://github.com/aarzilli/golua
 
 The lua multi-thread support has been added to the repository, it can be used to extend lua multi-thread 
-via golang's goroutine. please refer to the other repository https://github.com/ZhangQin3/golua_standalone.
+via golang's goroutine and there is a chennel function to transfer data betwen lua threads via send and 
+recv functions. please refer to the other repository https://github.com/ZhangQin3/golua_standalone.
 
 
 
