@@ -31,7 +31,7 @@ int ll_lua_Writer(lua_State* ls, const void* p, size_t sz, void* ud) {
 	return 0;
 }
 
-static void transfer_args(lua_State *dst, lua_State *src) {
+void transfer_args(lua_State *dst, lua_State *src) {
 	int n = lua_gettop(src);
 	int i;
 	for(i = 2; i <= n; i++) {
