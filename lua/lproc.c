@@ -97,8 +97,8 @@ lua_State * ll_newstate(lua_State *L) {
 void ll_thread(lua_State *L) {
 	luaL_openlibs(L);
 	// get the thread function's args number
-		int nargs = lua_tointeger(L, -1);
-		lua_pop(L, 1);
+	int nargs = lua_tointeger(L, -1);
+	lua_pop(L, 1);
 
 	if(lua_pcall(L, nargs, 0, 0) != 0) {
 		luaL_error(L, "thread error: %s", lua_tostring(L, -1));
