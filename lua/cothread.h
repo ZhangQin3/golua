@@ -9,5 +9,4 @@ typedef struct co_thread  {
 co_thread ll_cothread(lua_State *L);
 int kickoff(co_thread * ct);
 int resume(co_thread * ct);
-
-void test(lua_State *L);
+void register_sleep(lua_State *L, char* mod);

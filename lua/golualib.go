@@ -19,13 +19,15 @@ func (L *State) GNewMetaTable(tname string) {
 }
 
 func (L *State) GCheckFunctionArgs(name string, num int) {
-	if L.GetTop() != num {
-		L.RaiseError(fmt.Sprintf("Function %s expects exactly %d arguments", name, num))
+	nargs := L.GetTop()
+	if nargs != num {
+		L.RaiseError(fmt.Sprintf("Function %s expects exactly %d arguments, but got %d", name, num, nargs))
 	}
 }
 
 func (L *State) GCheckMethodArgs(name string, num int) {
-	if L.GetTop() != num {
-		L.RaiseError(fmt.Sprintf("Method %s expects exactly %d arguments", name, num-1))
+	nargs := L.GetTop()
+	if nargs != num {
+		L.RaiseError(fmt.Sprintf("Method %s expects exactly %d arguments, but got %d", name, num-1, nargs-1))
 	}
 }

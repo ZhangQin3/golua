@@ -1,14 +1,14 @@
 package lua
 
 //#include <lua.h>
+//#include <stdlib.h>
 //#include "golua.h"
 //#include "cothread.h"
 import "C"
 
 import (
-	"fmt"
-	// "sync"
 	"time"
+	"unsafe"
 )
 
 type thread struct {
@@ -16,20 +16,23 @@ type thread struct {
 }
 
 var (
-	gTrigerChan chan int          = make(chan int, 1)
+	gTrigerChan chan int          = make(chan int)
 	gYieldChan  chan *C.co_thread = make(chan *C.co_thread, 32)
-	// gMutex      *sync.Mutex       = new(sync.Mutex)
+	gSchedule   bool              = true
 )
 
 func ct_schedule() {
-	t := time.NewTicker(35 * time.Millisecond)
+	t := time.NewTicker(15 * time.Millisecond)
+done:
 	for {
 		select {
 		case <-gTrigerChan:
 			<-t.C // let the main thread run when waiting the ticker t to expire
-			if len(gYieldChan) > 0 {
+			if len(gYieldChan) == 0 {
+				break done
+			} else {
 				ct := <-gYieldChan
-				resume(ct)
+				go resume(ct)
 			}
 		}
 	}
@@ -37,7 +40,7 @@ func ct_schedule() {
 
 func ct_start(L *State) int {
 	ct := C.ll_cothread(L.s)
-	kickoff(&ct)
+	go kickoff(&ct)
 	go ct_schedule()
 
 	return 0
@@ -59,19 +62,32 @@ func kickoff(ct *C.co_thread) {
 	gTrigerChan <- r
 }
 
-func ct_sleep(L *State) int {
-	// L.GCheckFunctionArgs("sleep", 1)
-	nargs := L.GetTop()
-	for i := 1; i <= nargs; i++ {
-		fmt.Printf("===%d== %d\n", i, L.Type(i))
-	}
-	n := L.CheckInteger(-1)
-	for i := 0; i < n*50; i++ {
-		time.Sleep(20)
-	}
-	return 0
-}
+// func ct_sleep(L *State) int {
+// 	// if gSchedule {
+// 	// 	gSchedule = false
+// 	// 	go ct_schedule()
+// 	// }
+// 	// L.GCheckFunctionArgs("sleep", 1)
+// 	// nargs := L.GetTop()
+// 	// for i := 1; i <= nargs; i++ {
+// 	// 	fmt.Printf("===%d== %d\n", i, L.Type(i))
+// 	// }
+// 	fmt.Println("before in sleep")
+// 	<-gSleepChan
+// 	fmt.Println("before in sleep, after get")
+// 	n := time.Duration(L.CheckInteger(1))
+// 	// for i := 0; i < n*50; i++ {
+// 	time.Sleep(n * time.Millisecond)
+// 	gSleepChan <- 1
+// 	fmt.Println("after in sleep")
+// 	// }
+// 	return 0
+// }
 
 func RegisterCothread(L *State) {
-	L.NewLib("cot", GoFuncs{"start": ct_start, "sleep": ct_sleep})
+	L.NewLib("coth", GoFuncs{"start": ct_start})
+
+	cs := C.CString("coth")
+	defer C.free(unsafe.Pointer(cs))
+	C.register_sleep(L.s, cs)
 }
